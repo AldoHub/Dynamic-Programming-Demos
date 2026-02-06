@@ -34,4 +34,119 @@ function climbStairsTabulation(n) {
 }
 
 
-//https://www.youtube.com/watch?v=66hDgWottdA&t=30s 25:58
+//climbMin - each step has a cost adjacent to it - reach the top of the stair with the minimum cost
+
+function climbMin(n) {
+    const n = cost.length; //total number of steps
+    
+    //keep only the needed values for the processing
+    let prev1 = cost[1];
+    let prev2 = cost[2];
+    
+    //start from the second step and calculate the minimum cost for each step
+    for (let i = 2; i < n; i++) {
+        let currentPrice = Math.min(prev1, prev2) + cost[i];
+        prev1 = prev2;
+        prev2 = currentPrice;
+    }
+
+    return Math.min(prev1, prev2); //return the minimum cost for the last step
+
+}
+
+/**--------------- GRID PATTERN  --------------- */
+
+//find all the unique paths on a grid from Top Left to Bottom Right
+function uniquePaths(m, n) {
+    let paths = []; // 2 dimensional array to store the paths
+
+    for(let j= 0; j < n; j++){
+        paths[0][j] = 1; //only 1 path from top left to the first cell
+    }
+
+    for(let i = 1; i < m; i++){
+        paths[i][1] = 1; //only 1 path from top right to the first cell
+    }
+
+    for(let i = 1; i < m; i++){ //row loop
+        //start from the second row and calculate the paths for each cell
+        for(let j = 1; j < n; j++){ //column loop
+            paths[i][j] = paths[i-1][j] + paths[i][j-1]; //add the paths from the previous cell to the current cell
+        }
+    }
+
+    return paths[m-1][n-1]; //return the last cell
+
+}
+
+function uniquePatOptimized(m, n) {
+    let row = new Array(n).fill(1); //create an array with the first row
+
+    for(let i = 1; i < m; i++){ //row loop
+        for(let j = 1; j < n; j++){ //column loop
+            row[j] = row[j] + row[j-1]; //add the paths from the previous cell to the current cell
+        }
+    }
+
+    return row[n-1]; //return the last cell
+
+}
+
+
+/**--------------- TWO SEQUENCES --------------- */
+
+//find the length of the longest common subsequence between two sequences/strings
+function longestCommonSubsequence(a, b) {
+    let m = a.length; //length of the first sequence
+    let n = b.length; //length of the second sequence
+
+    let dp = [];
+
+    
+    for(let j = 0; j <= n + 1; i++){
+        dp[0][j] = 0 //create an array with zeros for the first row
+    }
+
+    for(let i = 0; i <= m + 1; i++){
+        dp[i][0] = 0 //create an array with zeros for the first column
+    }
+
+    for(let i = 1; i <= m; i++){
+        for(let j = 1; j <= n; j++){
+            if(a[i-1] === b[j-1]){
+                dp[i][j] = dp[i-1][j-1] + 1; //add 1 to the previous cell if the characters are the same
+            }else{
+                dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1]); //take the max of the previous cell and the current cell
+            }
+        }
+    }
+
+    return dp[m][n]; //return the last cell
+}
+
+
+function longestCommonSubsequenceOptimized(a, b) {
+    let m = a.length; //length of the first sequence
+    let n = b.length; //length of the second sequence
+
+    let prev = new Array(m + 1).fill(0); //create an array with zeros for the first row
+    let curr = new Array(m + 1).fill(0); //create an array with zeros for the first column
+    
+    for(let i = 1; i <= m; i++){
+        for(let j = 1; j <= n; j++){
+            if(a[i-1] === b[j-1]){
+               curr[j] = prev[i-1] + 1; //add 1 to the previous cell if the characters are the same
+            }else{
+               curr[j] = Math.max(prev[i], curr[j-1]); //take the max of the previous cell and the current cell
+            }
+        }
+
+        prev = curr; //swap the previous and current arrays for the next iteration
+        curr = new Array(n + 1).fill(0); //create an array with zeros for the first column
+
+    }
+
+    return prev[n]; //return the last cell
+}
+
+/**--------------- INTERVAL DP --------------- */
