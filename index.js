@@ -150,3 +150,134 @@ function longestCommonSubsequenceOptimized(a, b) {
 }
 
 /**--------------- INTERVAL DP --------------- */
+
+function longestPalindromeSubSequenceOptimized(s) {
+    let n = s.length;
+    
+    let prev = new Array(n + 1).fill(0); //create an array with zeros for the first row
+    let curr = new Array(n + 1).fill(0); //create an array with zeros for the first column
+
+    for(let i = n - 1; i >= 0; i--){
+        curr[i] = 1;
+        for(let j = i + 1; j < n; j++){
+            if(s[i] === s[j]){
+                curr[j] = prev[j-1] + 2; 
+            }else{
+                curr[j] = Math.max(prev[j], curr[j-1]);
+            }
+        }
+
+        [prev, curr] = [curr, prev]; //swap the previous and current arrays for the next iteration
+
+    }
+
+    return prev[n-1]; //return the last cell
+
+}
+
+
+/**--------------- NON-CONSTANT TRANSITION - result depends on all the previous steps --------------- */
+
+//find the length of the longest increasing subsequence
+function lengthOfLIS(nums) {
+    let n = nums.length;
+    let dp = new Array(n).fill(1);
+
+    for (let i = 1; i < n; i++) {
+        for (let j = 0; j < i; j++) {
+            if (nums[i] > nums[j]) {
+                dp[i] = Math.max(dp[i], dp[j] + 1);
+            }
+        }
+    }
+
+    return Math.max(...dp);
+
+}
+
+
+/**--------------- KNAPSACK  --------------- */
+
+function canPartition(nums) {
+    let totalSum = nums.reduce((a, b) => a + b, 0);
+
+    if(totalSum %2 !== 0) return false;
+
+    let target = totalSum / 2;
+    let dp = new Array(target + 1).fill(false);
+    dp[0] = true;
+
+    for(let num of nums){
+        //fill the array from the right to the left to avoid using the values more than once
+        for(let s = target - num; s >= 0; s--){
+            if(dp[s]){
+                dp[s + num] = true;
+            }
+        }
+    }
+
+    return dp[target];
+
+}
+
+
+
+//given an integer return true if its a power of four otherwise false
+function isPowerOfFour(n) {
+    if(n === 1) return true;
+    if(n === 0) return false;
+    if(n % 4 === 0) return true;
+
+    return isPowerOfFour(n/4);
+}
+
+const n1 = 16;
+const n2 = 5;
+const n3 = 1;
+
+console.log(isPowerOfFour(n1)); //true
+console.log(isPowerOfFour(n2)); //false
+console.log(isPowerOfFour(n3)); //true
+
+
+//return 2 indexes within the array that sums the target value
+function sumArrayValues(nums, target) {
+    let map = new Map();
+
+    for(let i = 0; i < nums.length; i++){
+        let compliment = target-nums[i];
+
+        if(map.has(compliment)){
+            return [map.get(compliment), i];
+        }else{
+            map.set(nums[i], i);
+        }
+    }
+}
+
+console.log(sumArrayValues([1,2,3,4,5], 9)); //[4, 3]
+console.log(sumArrayValues([1,2,3,4,5], 6)); //[2, 4]
+console.log(sumArrayValues([1,2,3,4,5], 7)); //[1, 5]
+
+
+/**--------------- TWO POINTS TECHNIQUE - place cursors on the far left and far right of the array and move them until they meet --------------- */
+
+//given a integer x, return  true if x is palindrome otherwise false
+
+function isPalindrome(x) {
+
+    if(x < 0) return false;
+    x = x.toString();
+
+    let left = 0;
+    let right = x.length - 1;
+
+    while(left < right){
+        if(x[left] !== x[right]) return false; // if the characters are not the same return false
+        left++;
+        right--;
+    }
+
+    return true;
+
+}
